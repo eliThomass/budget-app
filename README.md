@@ -54,7 +54,7 @@ The model defaults to `claude-haiku-5-5`. To change it, run `supabase secrets se
 
 ### 3. GitHub Pages
 1. Push this folder to a new GitHub repo on the `main` branch.
-2. **Settings → Secrets and variables → Actions → Variables tab**, then add:
+2. **Settings → Secrets and variables → Actions → Secrets tab**, then add these repository secrets:
    - `VITE_SUPABASE_URL` = your Project URL
    - `VITE_SUPABASE_ANON_KEY` = your anon / publishable key
 3. **Settings → Pages → Source:** choose **GitHub Actions**.
