@@ -1,0 +1,4 @@
+# The platform's JWT check doesn't work with the new publishable keys / asymmetric signing keys.
+# The assistant function verifies the caller itself (auth.getUser + ALLOWED_EMAIL), so it's safe to turn off.
+[functions.assistant]
+verify_jwt = false

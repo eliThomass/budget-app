@@ -20,6 +20,18 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const pad = (n: number) => String(n).padStart(2, '0')
 const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
+// Projects on the new API keys get SUPABASE_PUBLISHABLE_KEYS (JSON: { default: "sb_publishable_..." })
+// and may not have a legacy SUPABASE_ANON_KEY at all.
+function publicKey(): string {
+  const legacy = Deno.env.get('SUPABASE_ANON_KEY')
+  if (legacy) return legacy
+  try {
+    const key = JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS') ?? '{}').default
+    if (key) return key
+  } catch { /* fall through */ }
+  throw new Error('No publishable key in the function environment')
+}
+
 type Msg = { role: 'user' | 'assistant'; content: string }
 type Tx = { date: string; description: string; category_id: string | null; kind: string; amount: number }
 
@@ -33,7 +45,7 @@ Deno.serve(async (req) => {
     const token = auth.replace(/^Bearer\s+/i, '')
     if (!token) return json({ error: 'Not signed in' }, 401)
 
-    const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    const sb = createClient(Deno.env.get('SUPABASE_URL')!, publicKey(), {
       global: { headers: { Authorization: auth } },
     })
     const { data: { user }, error: userErr } = await sb.auth.getUser(token)
